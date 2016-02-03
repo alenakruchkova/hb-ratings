@@ -2,7 +2,7 @@
 
 from jinja2 import StrictUndefined
 
-from flask import Flask, render_template, redirect, request, flash, session
+from flask import Flask, render_template, redirect, request, flash, session, get_flashed_messages
 
 from flask_debugtoolbar import DebugToolbarExtension
 
@@ -39,6 +39,34 @@ def sign_up_form():
 
     return render_template("sign_up_form.html")
 
+@app.route("/login", methods=["POST", "GET"])
+def login_form():
+    """Show and submit login form"""
+
+    return render_template("login_form.html")
+
+#////////////
+
+@app.route("/login-verification", methods=["POST"])
+def check_for_email_password_match():
+    """Check if email and password match"""
+
+    email = request.form.get("email")
+    password = request.form.get("password")
+
+    users_with_match = db.session.query(User).filter((User.email == email) 
+        & (User.password == password)).all()
+
+    if len(users_with_match) == 0:
+        flash("Information you provided does not match our records. Please try again.")
+        return render_template('homepage.html')
+    else:
+        user = users_with_match[0].user_id
+        session['user'] = user
+        flash("You have been successfully logged in.")
+        return redirect("/")
+
+
 @app.route("/processing-form", methods=["POST"])
 def check_for_user():
     """Check if user exists. If not, add new user to database."""
@@ -57,7 +85,15 @@ def check_for_user():
     else:
         flash("""User with this email address already exists. 
             Please register with a different email address.""")
-        return redirect("/signup")
+        return redirect("/")
+
+@app.route("/logout")
+def logout():
+    """Logs out user"""
+
+    session['user'] = None
+    flash("Logged out!")
+    return redirect ("/")
     
 
 if __name__ == "__main__":
