@@ -3,13 +3,12 @@
 
 <h2>Sign Up Form</h2>
 
-<form action = "">
-    <label for="field-username">Username</label>
-        <input type="text" name="username" id="field-username">
+<form action = "/processing-form" id="myform" method="POST">
+    <label for="field-email">Email</label>
+        <input type="text" name="email" id="field-email">
     <label for="field-password">Password</label>
-        <input type="text" name="password" id="field-password">
+        <input type="password" name="password" id="field-password">
     <input type="submit">
 </form>
-
 
 {% endblock %}

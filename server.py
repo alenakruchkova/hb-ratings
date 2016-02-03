@@ -9,6 +9,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from model import connect_to_db, db, User, Rating, Movie
 
 
+
 app = Flask(__name__)
 
 # Required to use Flask sessions and the debug toolbar
@@ -32,7 +33,7 @@ def user_list():
     users = User.query.all()
     return render_template("user_list.html", users=users)
 
-@app.route("/signup", methods=["POST"])
+@app.route("/signup", methods=["POST", "GET"])
 def sign_up_form():
     """Show and submit sign up form"""
 
@@ -42,10 +43,22 @@ def sign_up_form():
 def check_for_user():
     """Check if user exists. If not, add new user to database."""
 
-    user = request.form.get("username")
+    email = request.form.get("email")
     password = request.form.get("password")
 
-    if user User.query.filter_by()
+    users_with_email = db.session.query(User).filter(User.email == email).all()
+
+    if len(users_with_email) == 0:
+        user=User(email=email, password=password)
+        db.session.add(user)
+        db.session.commit()
+        flash("Great success!!!!!!!!")
+        return render_template('homepage.html')
+    else:
+        flash("""User with this email address already exists. 
+            Please register with a different email address.""")
+        return redirect("/signup")
+    
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point
