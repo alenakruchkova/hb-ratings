@@ -13,6 +13,11 @@
             <li>{{ message }}</li>
         {% endfor %}
     </ul>
+
+    {% if session.user %}
+    <a href="/logout"><button type="button">LOG OUT :(</button></a> 
+    {% endif %}
+
   {% block content %} put your content here {% endblock %}
 
 </body>

@@ -33,19 +33,18 @@ def user_list():
     users = User.query.all()
     return render_template("user_list.html", users=users)
 
-@app.route("/signup", methods=["POST", "GET"])
+@app.route("/signup")
 def sign_up_form():
     """Show and submit sign up form"""
 
     return render_template("sign_up_form.html")
 
-@app.route("/login", methods=["POST", "GET"])
+@app.route("/login")
 def login_form():
     """Show and submit login form"""
 
     return render_template("login_form.html")
 
-#////////////
 
 @app.route("/login-verification", methods=["POST"])
 def check_for_email_password_match():
@@ -54,17 +53,23 @@ def check_for_email_password_match():
     email = request.form.get("email")
     password = request.form.get("password")
 
-    users_with_match = db.session.query(User).filter((User.email == email) 
-        & (User.password == password)).all()
+    user_with_match = db.session.query(User).filter((User.email == email) 
+        & (User.password == password)).first()
 
-    if len(users_with_match) == 0:
+    if not user_with_match:
         flash("Information you provided does not match our records. Please try again.")
-        return render_template('homepage.html')
+        return redirect ("/") 
     else:
-        user = users_with_match[0].user_id
+        user = user_with_match.user_id
         session['user'] = user
         flash("You have been successfully logged in.")
-        return redirect("/")
+        return redirect("/users/{{ user.user_id }}")
+
+@app.route("/users/{{ user.user_id }}")
+def show_user_info():
+    """Show information about the user"""
+
+    
 
 
 @app.route("/processing-form", methods=["POST"])

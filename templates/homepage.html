@@ -9,12 +9,14 @@
 <h2>Users</h2>
 <p><a href="/users">View all users</a></p>
 
+
+{% if not session.user %}
 <a href="/signup"><button type="button">SIGN UP!</button></a>
 
 <br>
 <br>
 
 <a href="/login"><button type="button">LOG IN :)</button></a>
-
+{% endif %}
 
 {% endblock %}
