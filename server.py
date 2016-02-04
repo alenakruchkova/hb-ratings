@@ -60,16 +60,40 @@ def check_for_email_password_match():
         flash("Information you provided does not match our records. Please try again.")
         return redirect ("/") 
     else:
-        user = user_with_match.user_id
-        session['user'] = user
+        user_id = user_with_match.user_id
+        session['user'] = user_id
         flash("You have been successfully logged in.")
-        return redirect("/users/{{ user.user_id }}")
+        return redirect("/users/" + str(user_id))
 
-@app.route("/users/{{ user.user_id }}")
-def show_user_info():
+@app.route("/users/<int:user_id>")
+def show_user_info(user_id):
     """Show information about the user"""
 
-    
+    user = db.session.query(User).get(user_id)
+    age = user.age
+    zipcode = user.zipcode
+   
+    all_ratings = user.ratings
+
+    all_scores = []
+
+    all_titles = []
+
+    for rating in all_ratings:
+        score = rating.score
+        all_scores.append(score)
+        movie_id = rating.movie_id
+        movie = db.session.query(Movie).get(movie_id)
+        title = movie.title
+        all_titles.append(title)
+
+
+    return render_template("user_profile.html",
+                            age=age,
+                            zipcode=zipcode,
+                            all_scores=all_scores,
+                            all_titles=all_titles,
+                            all_ratings=all_ratings)
 
 
 @app.route("/processing-form", methods=["POST"])
@@ -99,6 +123,12 @@ def logout():
     session['user'] = None
     flash("Logged out!")
     return redirect ("/")
+
+@app.route("/movies")
+def show_movie_list():
+    """Shows a list of all movies"""
+
+    return render_template("movie_list.html")    
     
 
 if __name__ == "__main__":

@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<p>User Age: {{user.age}}</p>
-<p>User Zipcode: {{user.zipcode}}</p>
+<p>User Age: {{ age }}</p>
+<p>User Zipcode: {{ zipcode }}</p>
 
 <table>
   <thead>
@@ -12,11 +12,16 @@
     <td>Movie</td>
     <td>Score</td>
   </tr>
-  {% for %}
-  <td>{{ title }}</td>
-  <td>{{ score }}</td>
+  {% for rating in all_ratings %}
+  <tr>
+    {% for title in all_titles %}
+    <td>{{ title }}</td>
+    {% endfor %}
+    {% for score in all_scores %}
+    <td>{{ score }}</td>
+    {% endfor %}
+  </tr>
   {% endfor %}
-</tr>
 </table>
 
 {% endblock %}
