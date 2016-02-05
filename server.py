@@ -8,6 +8,8 @@ from flask_debugtoolbar import DebugToolbarExtension
 
 from model import connect_to_db, db, User, Rating, Movie
 
+from collections import Counter
+
 
 
 app = Flask(__name__)
@@ -87,13 +89,12 @@ def show_user_info(user_id):
         title = movie.title
         all_titles.append(title)
 
+    zipped = zip(all_titles, all_scores) 
 
     return render_template("user_profile.html",
                             age=age,
                             zipcode=zipcode,
-                            all_scores=all_scores,
-                            all_titles=all_titles,
-                            all_ratings=all_ratings)
+                            zipped = zipped)
 
 
 @app.route("/processing-form", methods=["POST"])
@@ -128,8 +129,68 @@ def logout():
 def show_movie_list():
     """Shows a list of all movies"""
 
-    return render_template("movie_list.html")    
-    
+    movies = Movie.query.all()
+
+    return render_template("movie_list.html", movies=movies)
+
+@app.route("/movies/<int:movie_id>")
+def show_movie_details(movie_id):
+    """Show movie details"""
+
+    movie = db.session.query(Movie).get(movie_id)
+
+    title = movie.title
+    released_at = movie.released_at
+    imdb_url = movie.imdb_url
+
+    # movie_ratings = movie.ratings.group_by(Rating.score).count()
+    # movie_ratings = db.session.query(Rating.score).filter_by(movie_id = movie.movie_id).group_by(Rating.score)
+
+    movie_ratings = db.session.query(Rating.score).filter_by(movie_id = movie.movie_id).all()
+
+    # scores = []
+
+    # for score in movie_ratings:
+    #     score = tuple[0]
+    #     scores.append(score)
+
+
+
+
+    return render_template("movie_details.html",
+                            title=title,
+                            released_at=released_at,
+                            imdb_url=imdb_url,
+                            movie_ratings=movie_ratings)
+
+
+@app.route("/processing-user-score")
+def processing_user_score():
+    """Records new rating or updates existing rating"""
+
+    user_score = request.args.get("score")
+
+    #for user_id and movie_id 
+    # if score is Null create new rating in db +flash "u ranked the movie!"
+    # else: update score in db + flash
+    # add to db
+    # commit
+
+    rating_in_db = db.session.query(Rating.score).filter((Rating.movie_id == movie_id) &
+        (Rating.user_id == user_id)).first()
+
+    if not rating_in_db:
+        flash("Yay you've rated this movie!")
+        rating_in_db = Rating(user_id=user_id, movie_id=movie_id, user_score=score)
+        db.session.add(rating_in_db)  
+    else:
+        flash("We've updated your score for this movie!")
+        rating_in_db.score = int(user_score)
+
+    db.session.commit()
+
+    return redirect("/movies" + str(movie_id))
+
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point

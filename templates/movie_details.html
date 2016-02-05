@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<p>Movie Title: {{ title }}</p>
+<p>Release Date: {{ released_at }}</p>
+<p><a href="{{ imdb_url }}">IMDB</a></p>
+
+<p>Scores: {{ movie_ratings }}</p>
+
+{% if session.user %}
+
+<form action="/processing-user-score">
+  Rate this movie!
+  <label><input type="radio" name="score" value="1">1</label>
+  <label><input type="radio" name="score" value="2">2</label>
+  <label><input type="radio" name="score" value="3">3</label>
+  <label><input type="radio" name="score" value="4">4</label>
+  <label><input type="radio" name="score" value="5">5</label>
+  <input type="submit">
+</form>
+
+{% endif %}
+
+
+{% endblock %}

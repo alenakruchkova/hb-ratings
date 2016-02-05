@@ -9,17 +9,13 @@
     <th>Movie Ratings</th>
   </thead>
   <tr>
-    <td>Movie</td>
-    <td>Score</td>
+    <th>Movie</th>
+    <th>Score</th>
   </tr>
-  {% for rating in all_ratings %}
+  {% for item in zipped %}
   <tr>
-    {% for title in all_titles %}
-    <td>{{ title }}</td>
-    {% endfor %}
-    {% for score in all_scores %}
-    <td>{{ score }}</td>
-    {% endfor %}
+    <td>{{ item[0] }}</td>
+    <td>{{ item[1] }}</td>
   </tr>
   {% endfor %}
 </table>
